@@ -1,0 +1,32 @@
+openapi: 3.0.3
+info:
+  description: dvijok_api API
+  title: dvijok_api API
+  version: 1.0.0
+servers:
+- url: https://dvijok_api
+paths:
+  /auth:
+    post:
+      responses:
+        "200":
+          description: OK
+      summary: POST auth
+      x-accepts: application/json
+  /menu:
+    get:
+      responses:
+        "200":
+          description: OK
+      summary: GET menu
+      x-accepts: application/json
+  /regisrter:
+    post:
+      responses:
+        "200":
+          description: OK
+      summary: POST regisrter
+      x-accepts: application/json
+components:
+  schemas: {}
+
