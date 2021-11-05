@@ -1,13 +1,12 @@
-package dvijok.repository
+package dvijok.service.repository
 
-import dvijok.model.DefaultResponse
-import dvijok.model.User
-import dvijok.model.UserTable
-import dvijok.model.UserTableDao
+import dvijok.model.*
+import dvijok.model.AuthorizationResponse
 import dvijok.utils.Hashing.sha256
+import dvijok.utils.JWTConfig
 import dvijok.utils.Util.guard
+import io.ktor.auth.*
 import io.ktor.http.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class AuthorizationRepository {
@@ -34,25 +33,25 @@ class AuthorizationRepository {
     }
 
 
-    fun authorizeUser(user: User): DefaultResponse {
-        var response = DefaultResponse("", HttpStatusCode.GatewayTimeout)
+    fun authorizeUser(user: UserPasswordCredential): AuthorizationResponse {
+        var response = AuthorizationResponse("", HttpStatusCode.GatewayTimeout)
         try {
             transaction {
-                val userDB = UserTableDao.find{UserTable.login eq user.login}.firstOrNull().guard{
-                    DefaultResponse("Пользователь не найден", HttpStatusCode.BadRequest)
+                val userDB = UserTableDao.find{UserTable.login eq user.name}.firstOrNull().guard{
+                    AuthorizationResponse("Пользователь не найден", HttpStatusCode.BadRequest)
                     return@transaction
                 }
                 response = if (userDB.secret == user.password.sha256()) {
-                    DefaultResponse("Успешно", HttpStatusCode.OK)
+                    AuthorizationResponse(data = UserToken(token = JWTConfig.makeToken(userDB.id.value), userId = userDB.id.value.toString()))
                 } else{
-                    DefaultResponse("Неверный пароль", HttpStatusCode.BadRequest)
+                    AuthorizationResponse("Неверный пароль", HttpStatusCode.BadRequest)
                 }
 
 
             }
         }
         catch (e:Exception){
-            response = DefaultResponse(e.localizedMessage,HttpStatusCode.InternalServerError)
+            response = AuthorizationResponse(error = e.localizedMessage,statusCode = HttpStatusCode.InternalServerError)
         }
         return response
     }

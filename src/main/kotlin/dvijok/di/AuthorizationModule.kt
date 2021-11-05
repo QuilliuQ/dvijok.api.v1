@@ -1,6 +1,6 @@
 package dvijok.di
 
-import dvijok.repository.AuthorizationRepository
+import dvijok.service.repository.AuthorizationRepository
 import dvijok.service.authorization.AuthorizationServiceImpl
 import dvijok.service.authorization.AuthorizeService
 import org.koin.dsl.bind

@@ -1,7 +1,9 @@
 package dvijok.model
 
 
+import io.ktor.auth.*
 import org.jetbrains.exposed.dao.*
+
 import java.util.*
 
 data class User(
@@ -10,7 +12,7 @@ data class User(
     val password: String,
     val firstName: String? = null,
     val avatar: String? = null
-)
+): Principal
 
 
 object UserTable : UUIDTable("users"){
@@ -32,10 +34,12 @@ class UserTableDao(id: EntityID<UUID>) : UUIDEntity(id) {
 }
 
 
-data class UserToken(val userId: Int,val token: Int)
-object Token : IntIdTable("token"){
+data class UserToken(val userId: String, val token: String)
+object Token : UUIDTable("token"){
     val token = integer("token")
 }
-class TokenDao(id:EntityID<Int>):IntEntity(id){
+class TokenDao(id:EntityID<UUID>):UUIDEntity(id){
+    companion object : UUIDEntityClass<TokenDao>(Token)
+    var token by Token.token
 
 }

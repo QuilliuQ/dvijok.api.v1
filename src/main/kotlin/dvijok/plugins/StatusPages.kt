@@ -11,7 +11,7 @@ fun Application.confugireStatusPages() {
             call.respond(HttpStatusCode.NotFound,"Несуществующий запрос")
         }
         status(HttpStatusCode.BadRequest){
-            call.respond(HttpStatusCode.NotFound,"Проверьте корректность запроса")
+            call.respond(HttpStatusCode.BadRequest,"Проверьте корректность запроса")
         }
 
     }
